@@ -132,7 +132,7 @@ int main(int argc, char **argv)
         msg.orientation.y = euler.pitch;
         msg.orientation.z = euler.yaw;
 
-
+        imu_pub.publish(msg);
 
         loop_rate.sleep();
 
