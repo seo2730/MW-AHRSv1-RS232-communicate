@@ -23,7 +23,7 @@ public:
         for(int i=0; i<100; i++)
             buffer[i] = 0;
 
-        dev = open_serial((char*)"/dev/ttyUSB0", 115200, 0, 0);
+        dev = open_serial((char*)"/dev/ttyUSB1", 115200, 0, 0);
 
         Tx[0] = A;     // a
         Tx[1] = N;     // n
@@ -108,9 +108,9 @@ int main(int argc, char **argv)
     ros::NodeHandle nh;
     ros::Rate loop_rate(10);
 
-    ros::Publisher imu_pub_ = nh.advertise<mw_ahrsv1::imu>("imu", 100);
+//    ros::Publisher imu_pub_ = nh.advertise<mw_ahrsv1::imu>("imu", 100);
     ros::Publisher imu_pub = nh.advertise<sensor_msgs::Imu>("mw_ahrsv1/imu", 1);
-    mw_ahrsv1::imu msg_;
+//    mw_ahrsv1::imu msg_;
 
     sensor_msgs::Imu msg;
 
@@ -122,11 +122,11 @@ int main(int argc, char **argv)
         euler = ahrs_obj.get_data();
 
 
-        msg_.roll = euler.roll;
-        msg_.pitch = euler.pitch;
-        msg_.yaw = euler.yaw;
+//        msg_.roll = euler.roll;
+//        msg_.pitch = euler.pitch;
+//        msg_.yaw = euler.yaw;
 
-        imu_pub_.publish(msg_);
+//        imu_pub_.publish(msg_);
 
         msg.orientation.x = euler.roll;
         msg.orientation.y = euler.pitch;
