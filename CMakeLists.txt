@@ -49,10 +49,10 @@ find_package(catkin REQUIRED COMPONENTS
 ##   * add every package in MSG_DEP_SET to generate_messages(DEPENDENCIES ...)
 
 ## Generate messages in the 'msg' folder
- add_message_files(
-   FILES
-   imu.msg
- )
+ #add_message_files(
+ #  FILES
+ #  imu.msg
+ #)
 
 ## Generate services in the 'srv' folder
 # add_service_files(
@@ -121,13 +121,13 @@ include_directories(
   ${catkin_INCLUDE_DIRS}
 )
 
-add_library(imu
+add_library(lib_imu
 src/Serial.cpp)
 
 add_executable(mw_ahrsv1 src/mw_ahrsv1.cpp)
 add_dependencies(mw_ahrsv1 ${${PROJECT_NAME}_EXPORTED_TARGETS}
 ${catkin_EXPORTED_TARGETS})
-target_link_libraries(mw_ahrsv1 imu ${catkin_LIBRARIES})
+target_link_libraries(mw_ahrsv1 lib_imu ${catkin_LIBRARIES})
 
 
 
