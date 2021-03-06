@@ -2,7 +2,7 @@
 #include "Serial.h"
 #include <iostream>
 #include <sensor_msgs/Imu.h>
-#include <../include/mw_ahrsv1/imu.h>
+//#include <../include/mw_ahrsv1/imu.h>
 
 
 typedef struct
@@ -31,7 +31,7 @@ public:
         for(int i=0; i<100; i++)
             buffer[i] = 0;
 
-        dev = open_serial((char*)"/dev/ttyUSB0", 115200, 0, 0);
+        dev = open_serial((char*)"/dev/ttyUSB1", 115200, 0, 0);
 
         Tx[0] = A;     // a
         Tx[1] = N;     // n
@@ -59,7 +59,7 @@ public:
 
     Euler get_data(void)
     {
-        write(dev,Tx,5);
+        write(dev,Tx,15);
         read(dev, &buffer, 100);
 
         if(buffer[0] == 'a' && buffer[1] == 'n' && buffer[2] == 'g')
@@ -90,7 +90,7 @@ public:
             }
         }
 
-        else if(buffer[0] == 'a' && buffer[1] == 'c' && buffer[2] == 'c')
+        else if(buffer[3] == 'a' && buffer[4] == 'c' && buffer[5] == 'c')
         {
             char *ptr = strtok(buffer, " ");
 
@@ -118,7 +118,7 @@ public:
             }
         }
 
-        else if(buffer[0] == 'g' && buffer[1] == 'y' && buffer[2] == 'r')
+        else if(buffer[6] == 'g' && buffer[7] == 'y' && buffer[8] == 'r')
         {
             char *ptr = strtok(buffer, " ");
 
