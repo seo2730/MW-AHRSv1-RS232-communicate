@@ -2,7 +2,7 @@
 #include "Serial.h"
 #include <iostream>
 #include <sensor_msgs/Imu.h>
-//#include <../include/mw_ahrsv1/imu.h>
+#include <../include/mw_ahrsv1/imu.h>
 
 
 typedef struct
@@ -31,7 +31,7 @@ public:
         for(int i=0; i<100; i++)
             buffer[i] = 0;
 
-        dev = open_serial((char*)"/dev/ttyUSB1", 115200, 0, 0);
+        dev = open_serial((char*)"/dev/ttyUSB0", 115200, 0, 0);
 
         Tx[0] = A;     // a
         Tx[1] = N;     // n
