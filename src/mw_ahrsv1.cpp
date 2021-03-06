@@ -90,7 +90,7 @@ public:
             }
         }
 
-        else if(buffer[3] == 'a' && buffer[4] == 'c' && buffer[5] == 'c')
+        else if(buffer[5] == 'a' && buffer[6] == 'c' && buffer[7] == 'c')
         {
             char *ptr = strtok(buffer, " ");
 
@@ -118,7 +118,7 @@ public:
             }
         }
 
-        else if(buffer[6] == 'g' && buffer[7] == 'y' && buffer[8] == 'r')
+        else if(buffer[10] == 'g' && buffer[11] == 'y' && buffer[12] == 'r')
         {
             char *ptr = strtok(buffer, " ");
 
