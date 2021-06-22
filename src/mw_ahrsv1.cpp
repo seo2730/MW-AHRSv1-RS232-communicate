@@ -8,17 +8,17 @@
 typedef struct
 {
     // Euler
-    float roll;
-    float pitch;
-    float yaw;
+    // float roll;
+    // float pitch;
+    // float yaw;
 
-    float a_x;
-    float a_y;
-    float a_z;
+    float ax;
+    float ay;
+    float az;
 
-    float w_x;
-    float w_y;
-    float w_z;
+    float wx;
+    float wy;
+    float wz;
 
 }Euler;
 
@@ -31,26 +31,14 @@ public:
         for(int i=0; i<100; i++)
             buffer[i] = 0;
 
-        dev = open_serial((char*)"/dev/ttyUSB1", 115200, 0, 0);
+        dev = open_serial((char*)"/dev/ttyUSB0", 115200, 0, 0);
 
-        Tx[0] = A;     // a
-        Tx[1] = N;     // n
-        Tx[2] = G;     // g
-        Tx[3] = CR;     // CR
-        Tx[4] = LF;     // LF
-
-        Tx[5] = A;     // a
-        Tx[6] = C;     // n
-        Tx[7] = C;     // g
-        Tx[8] = CR;     // CR
-        Tx[9] = LF;     // LF
-
-        Tx[10] = G;     // a
-        Tx[11] = Y;     // n
-        Tx[12] = R;     // g
-        Tx[13] = CR;     // CR
-        Tx[14] = LF;     // LF
-
+        Tx[0] = S;    
+        Tx[1] = S;    
+        Tx[2] = equal;    
+	Tx[3] = 0x33;    
+        Tx[4] = CR;     // CR
+        Tx[5] = LF;     // LF
     }
     ~MW_AHRS()
     {
@@ -59,10 +47,10 @@ public:
 
     Euler get_data(void)
     {
-        write(dev,Tx,15);
+        write(dev,Tx,5);
         read(dev, &buffer, 100);
 
-        if(buffer[0] == 'a' && buffer[1] == 'n' && buffer[2] == 'g')
+        /*if(buffer[0] == 'a' && buffer[1] == 'n' && buffer[2] == 'g')
         {
             char *ptr = strtok(buffer, " ");
 
@@ -88,9 +76,9 @@ public:
                 }
 
             }
-        }
+        }*/
 
-        else if(buffer[5] == 'a' && buffer[6] == 'c' && buffer[7] == 'c')
+	if(buffer[0] == 's' && buffer[1] == 's' && buffer[2] == '=' && buffer[3] == '3')
         {
             char *ptr = strtok(buffer, " ");
 
@@ -104,60 +92,45 @@ public:
 
                 if(ang_count == 1)
                 {
-                    euler.a_x = atof(ptr);
+                    euler.ax = atof(ptr);
                 }
                 else if(ang_count == 2)
                 {
-                    euler.a_y = atof(ptr);
+                    euler.ay = atof(ptr);
                 }
                 else if(ang_count == 3)
                 {
-                    euler.a_z = atof(ptr);
+                    euler.az = atof(ptr);
+                }
+		else if(ang_count == 4)
+                {
+                    euler.wx = atof(ptr);
+                }
+                else if(ang_count == 5)
+                {
+                    euler.wy = atof(ptr);
+                }
+		else if(ang_count == 6)
+                {
+                    euler.wz = atof(ptr);
                 }
 
             }
         }
 
-        else if(buffer[10] == 'g' && buffer[11] == 'y' && buffer[12] == 'r')
-        {
-            char *ptr = strtok(buffer, " ");
+        //std::cout << "roll = " << euler.roll << std::endl;
+        //std::cout << "pitch = " << euler.pitch << std::endl;
+        //std::cout << "yaw = " << euler.yaw << std::endl;
 
-            ang_count=0;
+	std::cout << "ax = " << euler.ax << std::endl;
+        std::cout << "ay = " << euler.ay << std::endl;
+        std::cout << "az = " << euler.az << std::endl;
 
-            while(ptr != NULL)
-            {
-                ang_count++;
+        std::cout << "wx = " << euler.wx << std::endl;
+        std::cout << "wy = " << euler.wy << std::endl;
+        std::cout << "wz = " << euler.wz << std::endl;
 
-                ptr = strtok(NULL, " ");
-
-                if(ang_count == 1)
-                {
-                    euler.w_x = atof(ptr);
-                }
-                else if(ang_count == 2)
-                {
-                    euler.w_y = atof(ptr);
-                }
-                else if(ang_count == 3)
-                {
-                    euler.w_z = atof(ptr);
-                }
-
-            }
-        }
-
-
-        std::cout << "roll = " << euler.roll << std::endl;
-        std::cout << "pitch = " << euler.pitch << std::endl;
-        std::cout << "yaw = " << euler.yaw << std::endl;
-
-        std::cout << "a_x = " << euler.a_x << std::endl;
-        std::cout << "a_y = " << euler.a_y << std::endl;
-        std::cout << "a_z = " << euler.a_z << std::endl;
-
-        std::cout << "w_x = " << euler.w_x << std::endl;
-        std::cout << "w_y = " << euler.w_y << std::endl;
-        std::cout << "w_z = " << euler.w_z << std::endl;
+	//std::cout << "buffer = " << buffer << std::endl;
         std::cout << std::endl;
 
         return euler;
@@ -173,7 +146,7 @@ private:
 
     // Data buffer
     char buffer[100];
-    unsigned char Tx[15];
+    unsigned char Tx[5];
 
     // Serperate Euler Angle Variable
     int ang_count = 0;
@@ -190,6 +163,9 @@ private:
 
     const unsigned char M = 0x67;
 
+    const unsigned char S = 0x73;
+    const unsigned char equal = 0x3D;
+
     const unsigned char CR = 0x0D;
     const unsigned char LF = 0x0A;
 
@@ -200,10 +176,10 @@ int main(int argc, char **argv)
 {
     ros::init(argc, argv, "mw_ahrsv1");
     ros::NodeHandle nh;
-    ros::Rate loop_rate(10);
+    ros::Rate loop_rate(100);
 
-//    ros::Publisher imu_pub_ = nh.advertise<mw_ahrsv1::imu>("imu", 100);
-    ros::Publisher imu_pub = nh.advertise<sensor_msgs::Imu>("mw_ahrsv1/imu", 1);
+    //ros::Publisher imu_pub = nh.advertise<mw_ahrsv1::imu>("imu", 100);
+    ros::Publisher imu_pub = nh.advertise<sensor_msgs::Imu>("/imu0",1000);
 //    mw_ahrsv1::imu msg_;
 
     sensor_msgs::Imu msg;
@@ -215,25 +191,19 @@ int main(int argc, char **argv)
     {
         euler = ahrs_obj.get_data();
 
+        //msg.orientation.x = euler.roll;
+        //msg.orientation.y = euler.pitch;
+        //msg.orientation.z = euler.yaw;
 
-//        msg_.roll = euler.roll;
-//        msg_.pitch = euler.pitch;
-//        msg_.yaw = euler.yaw;
+	msg.header.stamp = ros::Time::now();
+	msg.linear_acceleration.x = euler.ax;
+	msg.linear_acceleration.y = euler.ay;
+	msg.linear_acceleration.z = euler.az;
 
-//        imu_pub_.publish(msg_);
-
-        msg.orientation.x = euler.roll;
-        msg.orientation.y = euler.pitch;
-        msg.orientation.z = euler.yaw;
-
-        msg.linear_acceleration.x = euler.a_x;
-        msg.linear_acceleration.y = euler.a_y;
-        msg.linear_acceleration.z = euler.a_z;
-
-        msg.angular_velocity.x = euler.w_x;
-        msg.angular_velocity.y = euler.w_y;
-        msg.angular_velocity.z = euler.w_z;
-
+	msg.angular_velocity.x = euler.wx;
+	msg.angular_velocity.y = euler.wy;
+	msg.angular_velocity.z = euler.wz;	
+	
         imu_pub.publish(msg);
 
         loop_rate.sleep();
@@ -243,6 +213,3 @@ int main(int argc, char **argv)
 
     return 0;
 }
-
-
-
